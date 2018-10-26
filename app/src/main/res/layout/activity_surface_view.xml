@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.surfaceview.SurfaceViewActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="80dp"
+            android:text="重置"
+            android:layout_height="40dp" />
+        <Button
+            android:id="@+id/btn_delete_one_step"
+            android:layout_width="80dp"
+            android:text="撤销一步"
+            android:layout_height="40dp" />
+        <Button
+            android:id="@+id/btn_reset_one_step"
+            android:layout_width="80dp"
+            android:text="恢复一步"
+            android:layout_height="40dp" />
+
+    </LinearLayout>
+
+    <com.video.longwu.widget.testSurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
