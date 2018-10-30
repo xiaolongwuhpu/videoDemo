@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import com.video.longwu.BaseApplication;
 import com.video.longwu.R;
+import com.video.longwu.callback.SavePictureListener;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,7 +37,8 @@ public class FileUtil {
             dir.mkdirs();
     }
 
-    public static void saveJPG(byte[] data, String fileName) {
+    public static void saveJPG(byte[] data, String fileName, SavePictureListener listener) {
+
         FileOutputStream fileOutputStream = null;
         BufferedOutputStream bufferedOutputStream = null;
         try {
@@ -46,7 +48,9 @@ public class FileUtil {
             bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             bufferedOutputStream.write(data, 0, data.length);
             bufferedOutputStream.flush();
+            listener.onSuccess();
         } catch (Exception e) {
+            listener.onFailed("保存失败");
             e.printStackTrace();
         } finally {
             try {
@@ -60,6 +64,7 @@ public class FileUtil {
                     fileOutputStream = null;
                 }
             } catch (IOException e) {
+                listener.onFailed("关闭失败");
                 e.printStackTrace();
             }
         }
