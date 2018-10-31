@@ -65,7 +65,9 @@
         <activity
             android:name=".activity.TestPathActivity"
             android:hardwareAccelerated="false" />
-        <activity android:name=".activity.surfaceview.SurfaceCameraActivity" />
+        <activity android:name=".activity.surfaceview.SurfaceCameraActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.surfaceview.SurfaceCameraActivity2" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.surfaceview.SurfaceCameraActivity3" android:screenOrientation="portrait"/>
 
     </application>
 

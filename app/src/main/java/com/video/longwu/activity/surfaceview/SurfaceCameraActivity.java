@@ -13,16 +13,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.video.longwu.R;
+import com.video.longwu.annotation.CameraType;
 import com.video.longwu.callback.SavePictureListener;
 import com.video.longwu.util.FileUtil;
 import com.video.longwu.util.ScreenUtil;
 import com.video.longwu.util.ToastUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,12 +44,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
     SurfaceView surfaceView;
     @BindView(R.id.image_ligth)
     ImageView imageLigth;
-    @BindView(R.id.image_preview)
-    ImageView imagePreview;
-    @BindView(R.id.btn_cancle)
-    Button btnCancle;
-    @BindView(R.id.btn_save)
-    Button btnSave;
+
     SurfaceCameraActivity mContext;
     private SurfaceHolder surfaceHolder;
     private Camera camera;
@@ -54,16 +53,28 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
     public static final int save_pic = 111;
     int issuccessfocus = 0;
 
+    @CameraType.CameraTypes
+    private int cameraPosition = 0; //当前选用的摄像头，0后置 1前置
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 窗口标题
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // 全屏
+        Window window = getWindow();
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_surface_camera);
         ButterKnife.bind(this);
         mContext = this;
         initData();
     }
+
     private void initData() {
         surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.setKeepScreenOn(true);
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceHolder.addCallback(this);
         myAutoFocusCallback1 = new AutoFocusCallback() {
             @Override
@@ -80,15 +91,16 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
 
         };
     }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        openCamera();
+        initCamera();
     }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        initCamera();
-        isFlashlightOn();
     }
+
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (null != camera) {
@@ -99,7 +111,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
         }
     }
 
-    @OnClick({R.id.surface, R.id.btn_take_picture, R.id.image_ligth, R.id.btn_cancle, R.id.btn_save})
+    @OnClick({R.id.surface, R.id.btn_take_picture, R.id.image_ligth})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.surface:
@@ -109,27 +121,13 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
                 }
                 break;
             case R.id.btn_take_picture:
-                setUIvisiable(false);
                 if (camera == null) {
-                    openCamera();
                     initCamera();
                 }
                 camera.takePicture(shutterCallback, null, postPictureCallBack);
                 break;
             case R.id.image_ligth:
-                flashlightUtils();
-                break;
-            case R.id.btn_cancle:
-                setUIvisiable(true);
-                break;
-            case R.id.btn_save:
-                setUIvisiable(true);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        savePicture();
-                    }
-                }).start();
+                switchFlashMode();
                 break;
         }
     }
@@ -153,8 +151,9 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            Glide.with(mContext).load(data).thumbnail(0.2f).into(imagePreview);
-            mContext.data = data;
+            myThread = new MyThread(mContext,data);
+            myThread.start();
+            reStartCamera();
 //            File file = new File(FileUtil.IMAGE_PATH, fileName);
 //            Uri uri = Uri.fromFile(file);
 //            Intent it = new Intent();
@@ -163,9 +162,28 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
 //            startActivity(it);
         }
     };
-    private void openCamera() {
+
+    //重新打开预览
+    public void reStartCamera() {
+        if (camera != null) {
+            camera.startPreview();
+        }else{
+            initCamera();
+        }
+    }
+
+    String FlashMode = Camera.Parameters.FLASH_MODE_OFF;
+    Camera.Parameters parameters;
+
+    //初始化相机
+    private void initCamera() {
+        if (camera != null) {
+            camera.stopPreview();//停掉原来摄像头的预览
+            camera.release();//释放资源
+            camera = null;//取消原来摄像头
+        }
         try {
-            camera = Camera.open();
+            camera = Camera.open(cameraPosition);
             camera.setPreviewDisplay(surfaceHolder);
         } catch (Exception e) {
             if (null != camera) {
@@ -173,25 +191,24 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
                 camera = null;
             }
             ToastUtil.showLong("启动摄像头失败,请开启摄像头权限");
+            return;
         }
-    }
+        if (parameters == null) {
+            parameters = camera.getParameters();
+            parameters.setPictureFormat(ImageFormat.JPEG);
+            parameters.setJpegQuality(100);
+            parameters.setJpegThumbnailQuality(100);
+            List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
+            Camera.Size size = getOptimalPreviewSize(sizeList, surfaceView.getWidth(), ScreenUtil.getScreenHeight(this));
 
-    String FlashMode = Camera.Parameters.FLASH_MODE_OFF;
-    //初始化相机
-    private void initCamera() {
-        Camera.Parameters parameters = camera.getParameters();
-        parameters.setPictureFormat(ImageFormat.JPEG);
-        parameters.setJpegQuality(100);
-        parameters.setJpegThumbnailQuality(100);
-        List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
-        Camera.Size size = getOptimalPreviewSize(sizeList, surfaceView.getWidth(), ScreenUtil.getScreenHeight(this));
+            List<Camera.Size> picsizeList = parameters.getSupportedPictureSizes();
+            Camera.Size picsize = getPicsize(picsizeList, 0.5625);
+            parameters.setPreviewSize(size.width, size.height);
+            parameters.setRotation(90);//生成的图片转90°
+            parameters.setFlashMode(FlashMode);
+            parameters.setPictureSize(picsize.width, picsize.height);
+        }
 
-        List<Camera.Size> picsizeList = parameters.getSupportedPictureSizes();
-        Camera.Size picsize = getPicsize(picsizeList, 0.75);
-        parameters.setPreviewSize(size.width, size.height);
-        parameters.setRotation(90);//生成的图片转90°
-        parameters.setFlashMode(FlashMode);
-        parameters.setPictureSize(picsize.width, picsize.height);
         camera.setParameters(parameters);
         camera.setDisplayOrientation(90);
         camera.startPreview();
@@ -247,9 +264,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
         return Picsizes.get(0);
     }
 
-    byte[] data;
-
-    private void savePicture() {
+    private void savePicture(byte[] data) {
         String fileName = System.currentTimeMillis() + ".jpg";
         FileUtil.saveJPG(data, fileName, new SavePictureListener() {
             @Override
@@ -269,26 +284,6 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
             }
         });
     }
-    private void setUIvisiable(boolean isPreviewing) {
-        if (isPreviewing) {//正常界面
-            btnCancle.setVisibility(View.GONE);
-            btnSave.setVisibility(View.GONE);
-            imagePreview.setVisibility(View.GONE);
-
-            imageLigth.setVisibility(View.VISIBLE);
-            surfaceView.setVisibility(View.VISIBLE);
-            btnTakePicture.setVisibility(View.VISIBLE);
-        } else { //保存界面
-            btnCancle.setVisibility(View.VISIBLE);
-            btnSave.setVisibility(View.VISIBLE);
-            imagePreview.setVisibility(View.VISIBLE);
-
-            imageLigth.setVisibility(View.GONE);
-            surfaceView.setVisibility(View.GONE);
-            btnTakePicture.setVisibility(View.GONE);
-        }
-    }
-
 
     private Handler mHandler = new Handler() {
         @Override
@@ -305,69 +300,70 @@ public class SurfaceCameraActivity extends AppCompatActivity implements SurfaceH
             }
         }
     };
-    //----------------打开/关闭 闪光灯-------开始-------
+    MyThread myThread;
 
-    /**
-     * 设置相机预览
-     **/
-    public void setCameraPreView() {
-        if (camera != null) {
-            camera.stopPreview();
-        } else {
-            openCamera();
+    private class MyThread extends Thread {
+        WeakReference<SurfaceCameraActivity> mThreadActivityRef;
+        byte[] data;
+        public MyThread(SurfaceCameraActivity activity,byte[] data) {
+            mThreadActivityRef = new WeakReference<SurfaceCameraActivity>(
+                    activity);
+            this.data = data;
         }
-        initCamera();
+
+        @Override
+        public void run() {
+            super.run();
+            if (mThreadActivityRef == null)
+                return;
+            if (mThreadActivityRef.get() != null)
+                savePicture(data);
+        }
     }
 
+
+    //----------------打开/关闭 闪光灯-------开始-------
+    private int lightType = 3;//1 不开启闪光灯 2自动 3长亮
     /**
      * 闪光灯开关
      */
-    public void flashlightUtils() {
-        if (isFlashlightOn()) {
-            Closeshoudian();
-        } else {
-            Openshoudian();
+    public void switchFlashMode() {
+        switch (lightType) {
+            case 1:
+                imageLigth.setBackgroundResource(R.mipmap.flash_auto);
+                setIsOpenFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                lightType = 2;
+                break;
+            case 2:
+                imageLigth.setBackgroundResource(R.mipmap.flash_on);
+                setIsOpenFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                lightType = 3;
+                break;
+            case 3:
+                imageLigth.setBackgroundResource(R.mipmap.flash_close);
+                setIsOpenFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                lightType = 1;
+                break;
         }
     }
 
-    /**
-     * 是否开启了闪光灯
-     * @return
-     */
-    public boolean isFlashlightOn() {
-        try {
-            Camera.Parameters parameters = camera.getParameters();
-            String flashMode = parameters.getFlashMode();
-            if (flashMode.equals(android.hardware.Camera.Parameters.FLASH_MODE_TORCH)) {
-                Glide.with(this).load(R.mipmap.flash_close).into(imageLigth);
-                return true;
-            } else {
-                Glide.with(this).load(R.mipmap.flash_open).into(imageLigth);
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public void Openshoudian() {
-        if (camera != null) {
-            //打开闪光灯
-            Camera.Parameters parameter = camera.getParameters();
-            parameter.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            camera.setParameters(parameter);
-            FlashMode = Camera.Parameters.FLASH_MODE_TORCH;
-        }
-    }
-    //关闭闪光灯
-    public void Closeshoudian() {
-        if (camera != null) {
-            FlashMode = Camera.Parameters.FLASH_MODE_OFF;
-
-            camera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            camera.setParameters(camera.getParameters());
-            setCameraPreView();
-        }
+    //设置开启闪光灯(重新预览)
+    public void setIsOpenFlashMode(String mIsOpenFlashMode) {
+        FlashMode = mIsOpenFlashMode;
+        Camera.Parameters mParameters = camera.getParameters();
+        //设置闪光灯模式
+        mParameters.setFlashMode(mIsOpenFlashMode);
+        camera.setParameters(mParameters);
     }
     //----------------打开/关闭 闪光灯-------结束-------
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (myThread != null) {
+            myThread.interrupt();
+            myThread = null;
+        }
+    }
+
 }
