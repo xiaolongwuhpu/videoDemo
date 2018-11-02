@@ -1,9 +1,10 @@
 package com.video.longwu.callback;
 
-public interface SavePictureListener {
+public abstract class SavePictureListener {
 
-    void onSuccess();
+    public void onSuccess() {
+    }
 
-    void onFailed(String reason);
+    public abstract void onFailed(String reason);
 
 }

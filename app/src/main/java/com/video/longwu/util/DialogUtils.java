@@ -7,6 +7,10 @@ import android.content.DialogInterface;
 
 import com.video.longwu.widget.LoadingDialog;
 
+/**
+ * 不再使用
+ */
+@Deprecated
 public class DialogUtils {
     private Context mContext;
     private LoadingDialog loadingDialog;
@@ -86,7 +90,6 @@ public class DialogUtils {
      * dismiss
      */
     public void dismissLoading() {
-
         if (loadingDialog!=null)
             loadingDialog.dismiss();
     }

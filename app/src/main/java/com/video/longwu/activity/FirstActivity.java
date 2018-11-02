@@ -7,7 +7,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.video.longwu.R;
-import com.video.longwu.activity.surfaceview.SurfaceCameraActivity;
+import com.video.longwu.activity.surfaceview.SurfaceCameraActivity2;
+import com.video.longwu.activity.surfaceview.SurfaceVideoActivity;
 import com.video.longwu.activity.surfaceview.SurfaceViewActivity;
 
 import butterknife.BindView;
@@ -22,6 +23,8 @@ public class FirstActivity extends AppCompatActivity {
     Button testpath;
     @BindView(R.id.surface_camera)
     Button surfaceCamera;
+    @BindView(R.id.surface_video)
+    Button surfaceVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,7 @@ public class FirstActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.surfaceview, R.id.testpath,R.id.surface_camera})
+    @OnClick({R.id.surfaceview, R.id.testpath, R.id.surface_camera, R.id.surface_video})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.surfaceview:
@@ -40,7 +43,10 @@ public class FirstActivity extends AppCompatActivity {
                 startActivity(new Intent(FirstActivity.this, TestPathActivity.class));
                 break;
             case R.id.surface_camera:
-                startActivity(new Intent(FirstActivity.this, SurfaceCameraActivity.class));
+                startActivity(new Intent(FirstActivity.this, SurfaceCameraActivity2.class));
+                break;
+            case R.id.surface_video:
+                startActivity(new Intent(FirstActivity.this, SurfaceVideoActivity.class));
                 break;
         }
     }

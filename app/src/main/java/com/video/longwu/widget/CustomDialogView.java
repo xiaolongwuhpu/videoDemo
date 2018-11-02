@@ -1,4 +1,4 @@
-package com.video.longwu.util;
+package com.video.longwu.widget;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -17,28 +17,21 @@ import com.video.longwu.R;
 /**
  * 通用加载中dialog
  */
-public class CustomDialog extends Dialog {
-    static CustomDialog dialog;
-
-    public CustomDialog(Context context) {
+public class CustomDialogView extends Dialog {
+    public CustomDialogView(Context context) {
         this(context, 0);
     }
 
-    public CustomDialog(Context context, int themeResId) {
+    public CustomDialogView(Context context, int themeResId) {
         super(context, themeResId);
     }
 
-    public static void showDialog(Activity activity) {
-        showDialog(activity, null);
+    public static CustomDialogView showDialog(Activity activity) {
+
+        return showDialog(activity, null);
     }
 
-    public static void dismissDialog() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
-        }
-    }
-
-    public static void showDialog(Activity activity, String msg) {
+    public static CustomDialogView showDialog(Activity activity, String msg) {
         RelativeLayout layout = (RelativeLayout) View.inflate(activity, R.layout
                 .common_progress_view, null);
         TextView msgText = (TextView) layout.findViewById(R.id.tv_Msg);
@@ -52,13 +45,13 @@ public class CustomDialog extends Dialog {
         Animation animation = AnimationUtils.loadAnimation(activity, R.anim.loading_anim);
         v.startAnimation(animation);//开始动画
 
-        dialog = new CustomDialog(activity, R.style.loading_dialog);
+        CustomDialogView dialog = new CustomDialogView(activity, R.style.loading_dialog);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
         dialog.setContentView(layout,
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT)
         );
-        dialog.show();
+        return dialog;
     }
 }
