@@ -10,6 +10,7 @@ import com.video.longwu.R;
 import com.video.longwu.activity.surfaceview.SurfaceCameraActivity2;
 import com.video.longwu.activity.surfaceview.SurfaceVideoActivity;
 import com.video.longwu.activity.surfaceview.SurfaceViewActivity;
+import com.video.longwu.activity.textureview.SimpleTextureViewActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,8 @@ public class FirstActivity extends AppCompatActivity {
     Button surfaceCamera;
     @BindView(R.id.surface_video)
     Button surfaceVideo;
+    @BindView(R.id.simpletextureview_video)
+    Button simpletextureviewVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class FirstActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.surfaceview, R.id.testpath, R.id.surface_camera, R.id.surface_video})
+    @OnClick({R.id.surfaceview, R.id.testpath, R.id.surface_camera, R.id.simpletextureview_video, R.id.surface_video})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.surfaceview:
@@ -47,6 +50,9 @@ public class FirstActivity extends AppCompatActivity {
                 break;
             case R.id.surface_video:
                 startActivity(new Intent(FirstActivity.this, SurfaceVideoActivity.class));
+                break;
+            case R.id.simpletextureview_video:
+                startActivity(new Intent(FirstActivity.this, SimpleTextureViewActivity.class));
                 break;
         }
     }

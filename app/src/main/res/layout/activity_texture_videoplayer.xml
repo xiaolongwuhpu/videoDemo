@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:background="@color/black">
 
-        <SurfaceView
-            android:id="@+id/surfaceview"
+        <TextureView
+            android:id="@+id/textureview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -29,12 +29,9 @@
             android:focusable="true"
             android:maxHeight="2dp"
             android:minHeight="2dp"
-            android:visibility="gone"
             android:progressDrawable="@drawable/po_seekbar"
             android:thumb="@drawable/seekbar_icon"
             android:thumbOffset="0dp" />
-
-
 
         <ImageView
             android:id="@+id/image_start_stop"

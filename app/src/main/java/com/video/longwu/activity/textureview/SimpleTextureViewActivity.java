@@ -1,14 +1,13 @@
-package com.video.longwu.activity.surfaceview;
+package com.video.longwu.activity.textureview;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,8 +15,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.video.longwu.R;
-import com.video.longwu.activity.textureview.IMediaPlayerInterface;
-import com.video.longwu.activity.textureview.ReSizeView;
 import com.video.longwu.config.VideoUrl;
 import com.video.longwu.constant.CommonConstants;
 import com.video.longwu.util.DialogHelper;
@@ -32,9 +29,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPlayerInterface, SurfaceHolder.Callback {
-    @BindView(R.id.surfaceview)
-    SurfaceView mSurfaceView;
+public class SimpleTextureViewActivity extends AppCompatActivity implements IMediaPlayerInterface {
+    @BindView(R.id.textureview)
+    TextureView mTextureView;
     @BindView(R.id.surfacelayout)
     RelativeLayout surfacelayout;
     @BindView(R.id.image_zoom)
@@ -49,49 +46,50 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
     @BindView(R.id.text_totletime)
     TextView textTotleTime;
 
-    private SurfaceHolder mSurfaceHolder;
+    IMediaPlayer iMediaPlayer;
     MediaPlayer mediaPlayer;
+
     private int position;//记录位置
     DialogHelper dialogHelper;
-    public static final float SHOW_SCALE = 16 * 1.0f / 9;
     private int mScreenWidth;
     private int mScreenHeight;
     private boolean isLand;//是否是横屏
 
     private int videoLength = 0;
     private boolean isPlayering = false;
-    IMediaPlayer iMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_surface_video);
+        setContentView(R.layout.activity_simple_texture_view);
         ButterKnife.bind(this);
         getOrientation();
-        iMediaPlayer = new IMediaPlayer(this);
-        init();
-        dialogHelper = new DialogHelper(this);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
+        if (iMediaPlayer == null) {
+            iMediaPlayer = new IMediaPlayer(this);
+            init();
+            dialogHelper = new DialogHelper(this);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                isTouching = true;
-            }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    isTouching = true;
+                }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                iMediaPlayer.startPlay(seekBar.getProgress());
-                isTouching = false;
-            }
-        });
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    iMediaPlayer.startPlay(seekBar.getProgress());
+                    isTouching = false;
+
+                }
+            });
+        }
+
     }
 
     private void init() {
-        mSurfaceHolder = mSurfaceView.getHolder();
-        mSurfaceHolder.setKeepScreenOn(true);
         mScreenWidth = ScreenUtil.getWidth(this);
         mScreenHeight = ScreenUtil.getHeight(this);
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) surfacelayout.getLayoutParams();
@@ -101,9 +99,35 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
             lp.height = (int) (1.0 * mScreenWidth / CommonConstants.SHOW_SCALE);
         }
         surfacelayout.setLayoutParams(lp);
-        mSurfaceHolder.addCallback(this);
-    }
+        mTextureView.setKeepScreenOn(true);
+        mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = iMediaPlayer.initMediaPlayer(surface, VideoUrl.url);
+                    dialogHelper.showLoadingDialog();
+                } else {
+                    mediaPlayer.setSurface(new Surface(surface));
+                }
+            }
 
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+//                iMediaPlayer.stopPlay();
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+            }
+        });
+    }
 
     @Override
     protected void onPause() {
@@ -117,30 +141,10 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
         iMediaPlayer.startPlay(position);
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (mediaPlayer == null) {
-            mediaPlayer = iMediaPlayer.initMediaPlayer(mSurfaceHolder, VideoUrl.url);
-            dialogHelper.showLoadingDialog();
-        } else {
-            mediaPlayer.setDisplay(mSurfaceHolder);
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-//        iMediaPlayer.stopPlay();
-    }
-
-    @OnClick({R.id.surfaceview, R.id.image_zoom, R.id.image_start_stop})
+    @OnClick({R.id.textureview, R.id.image_zoom, R.id.image_start_stop})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.surfaceview:
+            case R.id.textureview:
                 break;
             case R.id.image_zoom:
                 changeOrientation();
@@ -163,23 +167,23 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         isLand = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
-        ReSizeView.resetSize(this, mSurfaceView, mediaPlayer, isLand);
+        ReSizeView.resetSize(this, mTextureView, mediaPlayer, isLand);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && Build.VERSION.SDK_INT >= 19) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//        if (hasFocus && Build.VERSION.SDK_INT >= 19) {
+//            View decorView = getWindow().getDecorView();
+//            decorView.setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+//        }
+//    }
 
     public void changeOrientation() {
         if (Configuration.ORIENTATION_LANDSCAPE == this.getResources().getConfiguration().orientation) {
@@ -201,12 +205,6 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
 
     private boolean isShowTimeText = true;
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releaseTimer();
-        iMediaPlayer.releaseMP();
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -215,7 +213,7 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
 
     @Override
     public void onPrepared() {
-        ReSizeView.resetSize(this, mSurfaceView, mediaPlayer, isLand);
+        ReSizeView.resetSize(this, mTextureView, mediaPlayer, isLand);
         videoLength = mediaPlayer.getDuration();
         seekBar.setMax(videoLength);
         if (position != 0) {
@@ -236,6 +234,7 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
             seekBar.setVisibility(View.GONE);
             isShowTimeText = false;
         }
+
     }
 
     @Override
@@ -260,7 +259,15 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
 
     @Override
     public void onBufferingUpdate(int percent) {
-        seekBar.setSecondaryProgress((int) (videoLength * percent * 1.0 / 100.0));
+        if (isShowTimeText)
+            seekBar.setSecondaryProgress((int) (videoLength * percent * 1.0 / 100.0));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releaseTimer();
+        iMediaPlayer.releaseMP();
     }
 
     //----------记录播放进度----start-----//

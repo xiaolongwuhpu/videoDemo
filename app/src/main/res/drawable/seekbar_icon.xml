@@ -5,8 +5,8 @@
 
     <!--<solid android:color="@color/color_ff7700"></solid>-->
     <size
-        android:width="@dimen/dp_20"
-        android:height="@dimen/dp_20"></size>
+        android:width="@dimen/dp_18"
+        android:height="@dimen/dp_18"></size>
     <corners android:radius="@dimen/dp_10"></corners>
 
     <!--<stroke-->
@@ -14,8 +14,8 @@
         <!--android:color="@color/color_ff7700"></stroke>-->
 
     <gradient
-        android:centerColor="@color/colorPrimary"
-        android:gradientRadius="@dimen/dp_30"
+        android:centerColor="@color/color_88ff8f00"
+        android:gradientRadius="@dimen/dp_8"
         android:endColor="@color/loadingbg"
         android:type="radial"
         android:startColor="@color/color_ff7700"></gradient>

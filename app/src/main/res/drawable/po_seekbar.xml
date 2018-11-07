@@ -4,17 +4,17 @@
     <item android:id="@android:id/background">
         <shape >
             <stroke android:color="@color/white" android:width="0.5dp"/>
-           <solid  android:color="#ffffff"/>
-            <corners  android:radius="12dp"/>
+           <solid  android:color="@color/white"/>
+            <corners  android:radius="8dp"/>
         </shape>
     </item>
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape >
-                <stroke android:color="@color/white" android:width="0.5dp"/>
+                <!--<stroke android:color="@color/color_ff7700" android:width="0.5dp"/>-->
 
-                <solid android:color="#ffffff" />
-                <corners  android:radius="12dp"/>
+                <solid android:color="@color/color_50ffffff" />
+                <corners  android:radius="8dp"/>
             </shape>
         </clip>
     </item>
@@ -22,8 +22,8 @@
         <clip>
             <shape >
                 <!--<solid android:color="#06a7fa" />-->
-                <solid android:color="@color/white" />
-                <corners  android:radius="12dp"/>
+                <solid android:color="@color/color_d0ff7700" />
+                <corners  android:radius="8dp"/>
             </shape>
         </clip>
     </item>

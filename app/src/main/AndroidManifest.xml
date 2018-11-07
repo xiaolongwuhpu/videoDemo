@@ -75,7 +75,10 @@
         <activity
             android:name=".activity.surfaceview.SurfaceCameraActivity3"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.surfaceview.SurfaceVideoActivity"  android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activity.surfaceview.SurfaceVideoActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.textureview.SimpleTextureViewActivity"></activity>
     </application>
 
 </manifest>

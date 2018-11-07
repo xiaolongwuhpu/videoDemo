@@ -10,4 +10,8 @@
     <color name="black">#000000</color>
     <color name="red">#ff0000</color>
     <color name="color_ff7700">#ff7700</color>
+
+    <color name="color_50ffffff">#50ffffff</color>
+    <color name="color_d0ff7700">#d0ff7700</color>
+    <color name="color_88ff8f00">#88ff8f00</color>
 </resources>
