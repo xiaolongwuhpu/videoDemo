@@ -6,7 +6,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import com.video.longwu.R;
 import com.video.longwu.activity.textureview.IMediaPlayerInterface;
 import com.video.longwu.activity.textureview.ReSizeView;
+import com.video.longwu.bean.LayoutSize;
 import com.video.longwu.config.VideoUrl;
 import com.video.longwu.constant.CommonConstants;
 import com.video.longwu.util.DialogHelper;
@@ -92,19 +92,17 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
     private void init() {
         mSurfaceHolder = mSurfaceView.getHolder();
         mSurfaceHolder.setKeepScreenOn(true);
-        mScreenWidth = ScreenUtil.getWidth(this);
-        mScreenHeight = ScreenUtil.getHeight(this);
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) surfacelayout.getLayoutParams();
-        if (isLand) {//横屏
-            lp.height = (int) (mScreenWidth * CommonConstants.SHOW_SCALE);
-        } else {//竖屏
-            lp.height = (int) (1.0 * mScreenWidth / CommonConstants.SHOW_SCALE);
-        }
-        surfacelayout.setLayoutParams(lp);
+        reSizeSurface();
         mSurfaceHolder.addCallback(this);
     }
 
-
+    private void reSizeSurface() {
+        LayoutSize layoutSize = ReSizeView.ResetRootLayoutSize(this, isLand);
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) surfacelayout.getLayoutParams();
+        lp.height /*= playerHeight*/ = layoutSize.getHeight();
+        lp.width /*= playerWidth */= layoutSize.getWidth();
+        surfacelayout.setLayoutParams(lp);
+    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -163,7 +161,8 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         isLand = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
-        ReSizeView.resetSize(this, mSurfaceView, mediaPlayer, isLand);
+        reSizeSurface();
+        ReSizeView.resetSurfaceSize(this, mSurfaceView, mediaPlayer, isLand);
     }
 
     @Override
@@ -215,7 +214,7 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
 
     @Override
     public void onPrepared() {
-        ReSizeView.resetSize(this, mSurfaceView, mediaPlayer, isLand);
+        ReSizeView.resetSurfaceSize(this, mSurfaceView, mediaPlayer, isLand);
         videoLength = mediaPlayer.getDuration();
         seekBar.setMax(videoLength);
         if (position != 0) {

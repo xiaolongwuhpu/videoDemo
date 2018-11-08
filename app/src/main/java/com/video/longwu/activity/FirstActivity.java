@@ -11,6 +11,7 @@ import com.video.longwu.activity.surfaceview.SurfaceCameraActivity2;
 import com.video.longwu.activity.surfaceview.SurfaceVideoActivity;
 import com.video.longwu.activity.surfaceview.SurfaceViewActivity;
 import com.video.longwu.activity.textureview.SimpleTextureViewActivity;
+import com.video.longwu.activity.tvlist.TvListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +53,8 @@ public class FirstActivity extends AppCompatActivity {
                 startActivity(new Intent(FirstActivity.this, SurfaceVideoActivity.class));
                 break;
             case R.id.simpletextureview_video:
-                startActivity(new Intent(FirstActivity.this, SimpleTextureViewActivity.class));
+//                startActivity(new Intent(FirstActivity.this, SimpleTextureViewActivity.class));
+                startActivity(new Intent(FirstActivity.this, TvListActivity.class));
                 break;
         }
     }

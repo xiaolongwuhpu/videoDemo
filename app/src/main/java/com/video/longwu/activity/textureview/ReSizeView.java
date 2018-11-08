@@ -2,17 +2,43 @@ package com.video.longwu.activity.textureview;
 
 import android.app.Activity;
 import android.media.MediaPlayer;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.video.longwu.bean.LayoutSize;
+import com.video.longwu.constant.CommonConstants;
 import com.video.longwu.util.ScreenUtil;
 
 import static com.video.longwu.constant.CommonConstants.SHOW_SCALE;
 
 public class ReSizeView {
+    /**
+     * 计算包裹surface的父布局的窗口大小
+     *
+     * @param context
+     * @param rootlayout
+     * @param isLand
+     */
+    public static LayoutSize ResetRootLayoutSize(Activity context, boolean isLand) {
+        int mScreenWidth = ScreenUtil.getWidth(context);
+        int mScreenHeight = ScreenUtil.getHeight(context);
+        LayoutSize layoutSize = new LayoutSize();
+        if (isLand) {//横屏
+            layoutSize.setHeight((int) (mScreenWidth * CommonConstants.SHOW_SCALE));
+        } else {//竖屏
+            layoutSize.setHeight((int) (1.0 * mScreenWidth / CommonConstants.SHOW_SCALE));
+        }
+        layoutSize.setWidth(mScreenWidth);
+        return layoutSize;
+    }
 
-    public static void resetSize(Activity context, View mTextureView, MediaPlayer mediaPlayer, boolean isLand) {
+    /**
+     * 计算实际播放surface窗口大小
+     *
+     * @param context
+     * @param isLand
+     */
+    public static void resetSurfaceSize(Activity context, View mTextureView, MediaPlayer mediaPlayer, boolean isLand) {
         int mScreenWidth = ScreenUtil.getWidth(context);
         int mScreenHeight = ScreenUtil.getHeight(context);
         float areaWH = 0.0f;
@@ -47,4 +73,6 @@ public class ReSizeView {
         }
 
     }
+
+
 }

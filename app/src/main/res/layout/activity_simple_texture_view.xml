@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.surfaceview.SurfaceVideoActivity">
@@ -9,7 +10,9 @@
         android:id="@+id/surfacelayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/black">
+        android:layout_centerInParent="true"
+        android:background="@color/black"
+        android:gravity="center_vertical">
 
         <TextureView
             android:id="@+id/textureview"
@@ -29,11 +32,10 @@
             android:focusable="true"
             android:maxHeight="2dp"
             android:minHeight="2dp"
-            android:visibility="gone"
             android:progressDrawable="@drawable/po_seekbar"
             android:thumb="@drawable/seekbar_icon"
-            android:thumbOffset="0dp" />
-
+            android:thumbOffset="0dp"
+            android:visibility="gone" />
 
 
         <ImageView
@@ -58,22 +60,81 @@
             android:id="@+id/text_playtime"
             android:layout_width="@dimen/dp_60"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|right"
-            android:textSize="@dimen/sp_14"
-            android:textColor="@color/white"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="@dimen/dp_40" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_40"
+            android:gravity="center_vertical|right"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_14" />
+
         <TextView
             android:id="@+id/text_totletime"
             android:layout_width="@dimen/dp_60"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|left"
-            android:textSize="@dimen/sp_14"
-            android:textColor="@color/white"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="@dimen/dp_40" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_40"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_14" />
+
+
+        <RelativeLayout
+            android:id="@+id/gesture_volume_layout"
+            android:layout_width="@dimen/dp_70"
+            android:layout_height="@dimen/dp_70"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_circle_000000"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/gesture_iv_player_volume"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/player_volume" />
+
+            <TextView
+                android:id="@+id/geture_tv_volume_percentage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gesture_iv_player_volume"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="80%"
+                android:textColor="@color/color_ff7700"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/gesture_bright_layout"
+            android:layout_width="@dimen/dp_70"
+            android:layout_height="@dimen/dp_70"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_circle_000000"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/gesture_iv_player_bright"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="@dimen/dp_45"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/player_bright" />
+
+            <TextView
+                android:id="@+id/geture_tv_bright_percentage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/gesture_iv_player_bright"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="80%"
+                android:textColor="@color/color_ff7700"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
     </RelativeLayout>
 
 
