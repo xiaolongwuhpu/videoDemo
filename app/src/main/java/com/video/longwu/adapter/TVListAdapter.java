@@ -1,6 +1,7 @@
 package com.video.longwu.adapter;
 
 import android.support.annotation.LayoutRes;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -17,6 +18,8 @@ public class TVListAdapter extends BaseQuickAdapter<TVListBean,BaseViewHolder> {
 
     @Override
     protected void convert(BaseViewHolder helper, TVListBean item) {
+        TextView tv = helper.getView(R.id.tv_name);
+        tv.setSelected(true);
         helper.setText(R.id.tv_name,item.getTvName());
     }
 }

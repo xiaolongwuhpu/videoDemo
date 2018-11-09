@@ -19,11 +19,10 @@ import com.video.longwu.activity.textureview.IMediaPlayerInterface;
 import com.video.longwu.activity.textureview.ReSizeView;
 import com.video.longwu.bean.LayoutSize;
 import com.video.longwu.config.VideoUrl;
-import com.video.longwu.constant.CommonConstants;
 import com.video.longwu.util.DialogHelper;
 import com.video.longwu.util.IMediaPlayer;
-import com.video.longwu.util.ScreenUtil;
 import com.video.longwu.util.TimeUtils;
+import com.video.longwu.util.ToastUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -145,11 +144,11 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
                 break;
             case R.id.image_start_stop:
                 if (isPlayering) {
-                    imageStartStop.setBackgroundResource(R.mipmap.start);
+                    imageStartStop.setBackgroundResource(R.mipmap.player_start);
                     isPlayering = !isPlayering;
                     iMediaPlayer.pausePlay();
                 } else {
-                    imageStartStop.setBackgroundResource(R.mipmap.pause);
+                    imageStartStop.setBackgroundResource(R.mipmap.player_pause);
                     isPlayering = !isPlayering;
                     iMediaPlayer.startPlay(position);
                 }
@@ -191,10 +190,10 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
     public void getOrientation() {
         if (Configuration.ORIENTATION_LANDSCAPE == this.getResources().getConfiguration().orientation) {
             isLand = true;
-            imageViewMM.setBackgroundResource(R.mipmap.min);
+            imageViewMM.setBackgroundResource(R.mipmap.screen_min);
         } else {
             isLand = false;
-            imageViewMM.setBackgroundResource(R.mipmap.max);
+            imageViewMM.setBackgroundResource(R.mipmap.screen_max);
         }
     }
 
@@ -223,7 +222,7 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
         dialogHelper.dismissLoadingDialog();
         mediaPlayer.start();
         isPlayering = true;
-        imageStartStop.setBackgroundResource(R.mipmap.pause);
+        imageStartStop.setBackgroundResource(R.mipmap.player_pause);
         if (videoLength != 0) {
             isShowTimeText = true;
             textTotleTime.setText(TimeUtils.formatTime(videoLength));
@@ -244,7 +243,9 @@ public class SurfaceVideoActivity extends AppCompatActivity implements IMediaPla
 
     @Override
     public void onError() {
-
+        dialogHelper.dismissLoadingDialog();
+        ToastUtil.showLong("播放失败,请重试");
+        finish();
     }
 
     @Override

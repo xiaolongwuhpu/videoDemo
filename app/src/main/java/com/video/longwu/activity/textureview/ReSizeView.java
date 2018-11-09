@@ -14,9 +14,7 @@ import static com.video.longwu.constant.CommonConstants.SHOW_SCALE;
 public class ReSizeView {
     /**
      * 计算包裹surface的父布局的窗口大小
-     *
      * @param context
-     * @param rootlayout
      * @param isLand
      */
     public static LayoutSize ResetRootLayoutSize(Activity context, boolean isLand) {

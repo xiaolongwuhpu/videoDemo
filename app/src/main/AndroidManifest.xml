@@ -76,9 +76,13 @@
             android:name=".activity.surfaceview.SurfaceCameraActivity3"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.surfaceview.SurfaceVideoActivity" android:configChanges="orientation|keyboardHidden|screenSize" />
-        <activity android:name=".activity.textureview.SimpleTextureViewActivity" android:configChanges="orientation|keyboardHidden|screenSize"/>
-        <activity android:name=".activity.tvlist.TvListActivity"></activity>
+            android:name=".activity.surfaceview.SurfaceVideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".activity.textureview.SimpleTextureViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".activity.tvlist.TvListActivity" />
+        <activity android:name=".activity.videolist.VideoVerticalListActivity"></activity>
     </application>
 
 </manifest>

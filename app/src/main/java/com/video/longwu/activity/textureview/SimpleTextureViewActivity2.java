@@ -151,11 +151,11 @@ public class SimpleTextureViewActivity2 extends AppCompatActivity implements IMe
                 break;
             case R.id.image_start_stop:
                 if (isPlayering) {
-                    imageStartStop.setBackgroundResource(R.mipmap.start);
+                    imageStartStop.setBackgroundResource(R.mipmap.player_start);
                     isPlayering = !isPlayering;
                     iMediaPlayer.pausePlay();
                 } else {
-                    imageStartStop.setBackgroundResource(R.mipmap.pause);
+                    imageStartStop.setBackgroundResource(R.mipmap.player_pause);
                     isPlayering = !isPlayering;
                     iMediaPlayer.startPlay(position);
                 }
@@ -196,10 +196,10 @@ public class SimpleTextureViewActivity2 extends AppCompatActivity implements IMe
     public void getOrientation() {
         if (Configuration.ORIENTATION_LANDSCAPE == this.getResources().getConfiguration().orientation) {
             isLand = true;
-            imageViewMM.setBackgroundResource(R.mipmap.min);
+            imageViewMM.setBackgroundResource(R.mipmap.screen_min);
         } else {
             isLand = false;
-            imageViewMM.setBackgroundResource(R.mipmap.max);
+            imageViewMM.setBackgroundResource(R.mipmap.screen_max);
         }
     }
 
@@ -222,7 +222,7 @@ public class SimpleTextureViewActivity2 extends AppCompatActivity implements IMe
         dialogHelper.dismissLoadingDialog();
         mediaPlayer.start();
         isPlayering = true;
-        imageStartStop.setBackgroundResource(R.mipmap.pause);
+        imageStartStop.setBackgroundResource(R.mipmap.player_pause);
         if (videoLength != 0) {
             isShowTimeText = true;
             textTotleTime.setText(TimeUtils.formatTime(videoLength));

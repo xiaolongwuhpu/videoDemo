@@ -1,6 +1,6 @@
 package com.video.longwu.util;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class IMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
     MediaPlayer mediaPlayer;
-    Activity mContext;
+    Context mContext;
     int position;
     IMediaPlayerInterface iMediaPlayerInterface;
 
-    public IMediaPlayer(Activity context) {
+    public IMediaPlayer(Context context) {
         mContext = context;
         this.iMediaPlayerInterface = (IMediaPlayerInterface) context;
     }

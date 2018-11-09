@@ -3,9 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_45">
 
-    <TextView
+    <com.video.longwu.widget.RollTextView
         android:id="@+id/tv_name"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true" />
 </LinearLayout>
