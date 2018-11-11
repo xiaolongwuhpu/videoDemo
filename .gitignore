@@ -72,3 +72,7 @@ fastlane/readme.md
 /build
 /captures
 .externalNativeBuild
+.idea/
+gradle/
+gradlew
+gradlew.bat

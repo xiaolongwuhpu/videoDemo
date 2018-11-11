@@ -18,13 +18,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class VideoPlayer extends RelativeLayout implements IMediaPlayerInterface {
-    IMediaPlayer iMediaPlayer;
+    public IMediaPlayer iMediaPlayer;
     @BindView(R.id.textureview)
     TextureView textureview;
     @BindView(R.id.mediaplayercontroller)
     MediaPlayerController mediaplayercontroller;
     private Context mContext;
-    MediaPlayer mMediaPlayer;
+    public MediaPlayer mMediaPlayer;
 
     public VideoPlayer(Context context) {
         this(context, null);
@@ -49,10 +49,11 @@ public class VideoPlayer extends RelativeLayout implements IMediaPlayerInterface
 
 
     }
+
     private TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            mMediaPlayer =  iMediaPlayer.initMediaPlayer(surface,tvListBean.getTvUrl());
+            mMediaPlayer = iMediaPlayer.initMediaPlayer(surface, tvListBean.getTvUrl());
         }
 
         @Override
@@ -68,9 +69,12 @@ public class VideoPlayer extends RelativeLayout implements IMediaPlayerInterface
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         }
     };
+
     @Override
     public void onPrepared() {
-
+        mediaplayercontroller.setDuration(mMediaPlayer.getDuration());
+        mediaplayercontroller.setVideoPlayer(this);
+        mMediaPlayer.start();
     }
 
     @Override
@@ -102,6 +106,10 @@ public class VideoPlayer extends RelativeLayout implements IMediaPlayerInterface
 
     public void setDataSouresUrl(TVListBean tvListBean) {
         this.tvListBean = tvListBean;
+    }
+
+    public void setVideoViewVisiable(int isvisable) {
+        textureview.setVisibility(isvisable);
     }
 
 }

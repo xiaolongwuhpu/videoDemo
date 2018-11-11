@@ -1,7 +1,7 @@
 package com.video.longwu.config;
 
 public class VideoUrl {
-//                    public static String url = "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4";//
+                    public static String url = "http://221.228.226.23/11/t/j/v/b/tjvbwspwhqdmgouolposcsfafpedmb/sh.yinyuetai.com/691201536EE4912BF7E4F1E2C67B8119.mp4";//
 //            public static String url = "http://221.228.226.5/14/z/w/y/y/zwyyobhyqvmwslabxyoaixvyubmekc/sh.yinyuetai.com/4599015ED06F94848EBF877EAAE13886.mp4";
 //            public static String url = "http://221.228.226.5/15/t/s/h/v/tshvhsxwkbjlipfohhamjkraxuknsc/sh.yinyuetai.com/88DC015DB03C829C2126EEBBB5A887CB.mp4";
 //            public static String url = "http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8";//cctv1
@@ -20,6 +20,6 @@ public class VideoUrl {
 //    public static String url = "rtmp://kv3.tp33.net/sat/tv701";////yinyun
 //    public static String url = "http://dlhls.cdn.zhanqi.tv/zqlive/53346_ESoth.m3u8";//放映厅
 //    public static String url = "http://hbmc.chinashadt.com:2739/live/dzdy.stream_360p/playlist.m3u8";//dongzuodianying
-    public static String url = "http://ali.cdn.kaiyanapp.com/f9db41a09a9f70847baca4c2f8afdafb_1280x720.mp4?auth_key=1541676644-0-0-751d3aa31d8460ac2b4eb1ade2f36c64";//donghua
+//    public static String url = "http://ali.cdn.kaiyanapp.com/f9db41a09a9f70847baca4c2f8afdafb_1280x720.mp4?auth_key=1541676644-0-0-751d3aa31d8460ac2b4eb1ade2f36c64";//donghua
 
 }

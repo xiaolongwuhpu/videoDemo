@@ -41,6 +41,11 @@ public final class TimeUtils {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
+    /**
+     * 时间长度毫秒转化成时分秒
+     * @param ms
+     * @return
+     */
     public static String formatTime(long ms) {
         if (ms == 0) return "";
         String time = getHHmmssFormat().format(ms);
