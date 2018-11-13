@@ -17,14 +17,23 @@ public class IMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer
     int position;
     IMediaPlayerInterface iMediaPlayerInterface;
 
+    public IMediaPlayer() {
+
+    }
+
     public IMediaPlayer(Context context) {
         mContext = context;
         this.iMediaPlayerInterface = (IMediaPlayerInterface) context;
     }
 
+    public IMediaPlayer(Context context, IMediaPlayerInterface iMediaPlayerInterface) {
+        mContext = context;
+        this.iMediaPlayerInterface = iMediaPlayerInterface;
+    }
+
     public MediaPlayer initMediaPlayer(SurfaceTexture surface, String url) {
         try {
-            if(surface==null){
+            if (surface == null) {
                 return null;
             }
             if (mediaPlayer == null) {
@@ -114,6 +123,7 @@ public class IMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer
         }
 
     }
+
     /**
      * 销毁掉MediaPlayer对象
      */
@@ -125,6 +135,7 @@ public class IMediaPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer
             System.gc();
         }
     }
+
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         iMediaPlayerInterface.onBufferingUpdate(percent);

@@ -5,7 +5,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -15,7 +18,8 @@ import android.widget.TextView;
 
 import com.video.longwu.R;
 import com.video.longwu.activity.videolist.view.VideoPlayer;
-import com.video.longwu.util.IMediaPlayer;
+import com.video.longwu.adapter.VideoListAdapter;
+import com.video.longwu.util.MediaHelper;
 import com.video.longwu.util.TimeUtils;
 
 import java.util.Timer;
@@ -54,6 +58,10 @@ public class MediaPlayerController extends RelativeLayout {
     private Context mContext;
     private int currentPosition;
 
+    private static final int MSG_HIDE_TITLE = 0;
+    private static final int MSG_UPDATE_TIME_PROGRESS = 1;
+    private static final int MSG_HIDE_CONTROLLER = 2;
+
     public MediaPlayerController(Context context) {
         this(context, null);
     }
@@ -68,6 +76,17 @@ public class MediaPlayerController extends RelativeLayout {
         View view = View.inflate(getContext(), R.layout.mediaplayer_controller, this);
         ButterKnife.bind(this, view);
         initViewDisplay();
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //按下+已经播放了
+                if (event.getAction() == MotionEvent.ACTION_DOWN && myVideoPlayer.hasPlay) {
+                    //显示或者隐藏视频控制界面
+                    showOrHideVideoController();
+                }
+                return true;//去处理事件
+            }
+        });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -75,18 +94,71 @@ public class MediaPlayerController extends RelativeLayout {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                isTouching = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                myVideoPlayer.iMediaPlayer.startPlay(seekBar.getProgress());
-                isTouching = false;
-
+                MediaHelper.play(seekBar.getProgress());
             }
         });
     }
 
+    //显示或者隐藏视频控制界面
+    private void showOrHideVideoController() {
+        if (llPlayControl.getVisibility() == View.GONE) {
+            //显示（标题、播放按钮、视频进度控制）
+            tvTitle.setVisibility(View.VISIBLE);
+            ivPlay.setVisibility(View.VISIBLE);
+            //加载动画
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_enter);
+            animation.setAnimationListener(new SimpleAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    super.onAnimationEnd(animation);
+                    llPlayControl.setVisibility(View.VISIBLE);
+                    //过2秒后自动隐藏
+                    mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
+                }
+            });
+            //执行动画
+            llPlayControl.startAnimation(animation);
+        } else {
+            //隐藏（标题、播放按钮、视频进度控制）
+            tvTitle.setVisibility(View.GONE);
+            ivPlay.setVisibility(View.GONE);
+            //加载动画
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_exit);
+            animation.setAnimationListener(new SimpleAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    super.onAnimationEnd(animation);
+                    llPlayControl.setVisibility(View.GONE);
+                }
+            });
+            //执行动画
+            llPlayControl.startAnimation(animation);
+        }
+    }
+
+
+    //简单的动画监听器（不需要其他的监听器去实现多余的方法）
+    private class SimpleAnimationListener implements Animation.AnimationListener {
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    }
 
     //初始化控件的显示状态
     public void initViewDisplay() {
@@ -103,6 +175,7 @@ public class MediaPlayerController extends RelativeLayout {
     }
 
     private boolean hasPause;
+
     @OnClick({R.id.iv_replay, R.id.iv_share, R.id.iv_play, R.id.iv_fullscreen})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -112,55 +185,55 @@ public class MediaPlayerController extends RelativeLayout {
             case R.id.iv_share:
                 break;
             case R.id.iv_play:
-//                //点击一个新的条目进行播放
-//                //点击的条目下标是否是之前播放的条目下标
-//                if (ItemPosition != adapter.currentPosition && adapter.currentPosition != -1) {
-//                    Log.i(TAG, "点击了其他的条目");
-//
-//                    //让其他的条目停止播放(还原条目开始的状态)
-//                    iMediaPlayer.releaseMP();
-//                    //把播放条目的下标设置给适配器
-//                    adapter.setPlayPosition(position);
-//                    //刷新显示
-//                    adapter.notifyDataSetChanged();
-//                    //播放
-//                    ivPlay.setVisibility(View.GONE);
-//                    tvAllTime.setVisibility(View.GONE);
-//                    pbLoading.setVisibility(View.VISIBLE);
-//                    //视频播放界面也需要显示
-//                    myVideoPlayer.setVideoViewVisiable(View.VISIBLE);
-//                    ivPlay.setImageResource(R.mipmap.player_pause);
-//                    return;
-//                }
-//
-//                if (myVideoPlayer!=null && myVideoPlayer.mMediaPlayer.isPlaying()) {
-//                    //暂停
-//                    iMediaPlayer.pausePlay();
-//                    //移除隐藏Controller布局的消息
-////                    mHandler.removeMessages(MSG_HIDE_CONTROLLER);
-//                    //移除更新播放时间和进度的消息
-////                    mHandler.removeMessages(MSG_UPDATE_TIME_PROGRESS);
-//                    ivPlay.setImageResource(R.mipmap.player_start);
-//                    hasPause = true;
-//                } else {
-//                    if (hasPause) {
-//                        //继续播放
-//                        iMediaPlayer.startPlay(0);
-////                        mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
-////                        updatePlayTimeAndProgress();
-//                        hasPause = false;
-//                    } else {
-//                        //播放
-//                        ivPlay.setVisibility(View.GONE);
-//                        tvAllTime.setVisibility(View.GONE);
-//                        pbLoading.setVisibility(View.VISIBLE);
-//                        //视频播放界面也需要显示
-//                        myVideoPlayer.setVideoViewVisiable(View.VISIBLE);
-//                        //把播放条目的下标设置给适配器
-//                        adapter.setPlayPosition(position);
-//                    }
-//                    ivPlay.setImageResource(R.mipmap.player_pause);
-//                }
+                //点击一个新的条目进行播放
+                //点击的条目下标是否是之前播放的条目下标
+                if (ItemPosition != adapter.currentPosition && adapter.currentPosition != -1) {
+                    Log.i(TAG, "点击了其他的条目");
+
+                    //让其他的条目停止播放(还原条目开始的状态)
+                    MediaHelper.release();
+                    //把播放条目的下标设置给适配器
+                    adapter.setPlayPosition(ItemPosition);
+                    //刷新显示
+                    adapter.notifyDataSetChanged();
+                    //播放
+                    ivPlay.setVisibility(View.GONE);
+                    tvAllTime.setVisibility(View.GONE);
+                    pbLoading.setVisibility(View.VISIBLE);
+                    //视频播放界面也需要显示
+                    myVideoPlayer.setVideoViewVisiable(View.VISIBLE);
+                    ivPlay.setImageResource(R.mipmap.player_pause);
+                    return;
+                }
+
+                if(MediaHelper.getInstance().isPlaying()){
+                    //暂停
+                    MediaHelper.pause();
+                    //移除隐藏Controller布局的消息
+                    mHandler.removeMessages(MSG_HIDE_CONTROLLER);
+                    //移除更新播放时间和进度的消息
+                    mHandler.removeMessages(MSG_UPDATE_TIME_PROGRESS);
+                    ivPlay.setImageResource(R.mipmap.player_start);
+                    hasPause = true;
+                } else {
+                    if (hasPause) {
+                        //继续播放
+                        MediaHelper.play(0);
+//                        mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
+//                        updatePlayTimeAndProgress();
+                        hasPause = false;
+                    } else {
+                        //播放
+                        ivPlay.setVisibility(View.GONE);
+                        tvAllTime.setVisibility(View.GONE);
+                        pbLoading.setVisibility(View.VISIBLE);
+                        //视频播放界面也需要显示
+                        myVideoPlayer.setVideoViewVisiable(View.VISIBLE);
+                        //把播放条目的下标设置给适配器
+                        adapter.setPlayPosition(ItemPosition);
+                    }
+                    ivPlay.setImageResource(R.mipmap.player_pause);
+                }
                 break;
             case R.id.iv_fullscreen:
                 break;
@@ -173,18 +246,16 @@ public class MediaPlayerController extends RelativeLayout {
         this.ItemPosition = position;
     }
 
-//    private VideoPlayListAdatper adapter;
-//
-//    public void setAdapter(VideoPlayListAdatper videoPlayListAdatper) {
-//        this.adapter = videoPlayListAdatper;
-//    }
+    private VideoListAdapter adapter;
+
+    public void setAdapter(VideoListAdapter videoPlayListAdatper) {
+        this.adapter = videoPlayListAdatper;
+    }
 
     private VideoPlayer myVideoPlayer;
-    private IMediaPlayer iMediaPlayer;
 
     public void setVideoPlayer(VideoPlayer myVideoPlayer) {
         this.myVideoPlayer = myVideoPlayer;
-        iMediaPlayer = myVideoPlayer.iMediaPlayer;
     }
 
     //设置播放视频的总时长
@@ -193,7 +264,6 @@ public class MediaPlayerController extends RelativeLayout {
         tvTime.setText(time);
         tvUseTime.setText("00:00");
         seekBar.setMax(duration);
-        setseekBar();
     }
 
     //显示视频播放完成的界面
@@ -203,54 +273,47 @@ public class MediaPlayerController extends RelativeLayout {
         tvAllTime.setVisibility(View.VISIBLE);
     }
 
+    //设置视频加载进度条的显示状态
+    public void setPbLoadingVisiable(int visiable) {
+        pbLoading.setVisibility(visiable);
+    }
+
     //----------记录播放进度----start-----//
-    Timer mTimer;
-    TimerTask mTimerTask;
-    private boolean isTouching;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-
+                case MSG_HIDE_TITLE:
+                    tvTitle.setVisibility(View.GONE);
+                    break;
+                case MSG_UPDATE_TIME_PROGRESS:
+                    updatePlayTimeAndProgress();
+                    break;
+                case MSG_HIDE_CONTROLLER:
+                    showOrHideVideoController();
+                    break;
             }
         }
     };
 
-    public void setseekBar() {
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (myVideoPlayer == null || myVideoPlayer.mMediaPlayer == null || isTouching == true || seekBar == null)
-                    return;//当用户正在拖动进度进度条时不处理进度条的的进度
-                currentPosition = myVideoPlayer.mMediaPlayer.getCurrentPosition();
-                seekBar.setProgress(currentPosition);
-                mHandler.post(new MyRunnable());
-            }
-
-        };
-        mTimer.schedule(mTimerTask, 0, 500);
-    }
-
-    private class MyRunnable implements Runnable {
-        @Override
-        public void run() {
-            tvUseTime.setText(TimeUtils.formatTime(currentPosition));
+    //更新播放的时间和进度
+    public void updatePlayTimeAndProgress() {
+        //获取目前播放的进度
+        int currentPosition = MediaHelper.getInstance().getCurrentPosition();
+        //格式化
+        String useTime = TimeUtils.formatTime(currentPosition);
+        tvUseTime.setText(useTime);
+        //更新进度
+        int duration = MediaHelper.getInstance().getDuration();
+        if(duration == 0){
+            return;
         }
+        seekBar.setProgress(currentPosition);
+        //发送一个更新的延时消息
+        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME_PROGRESS,500);
+//        setseekBar();
     }
-
-    public void releaseTimer() {
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
-        }
-        if (mTimerTask != null) {
-            mTimerTask.cancel();
-            mTimerTask = null;
-        }
-    }
-
     //----------记录播放进度---end------//
     //移除所有的消息
     public void removeAllMessage() {

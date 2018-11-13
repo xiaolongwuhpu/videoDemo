@@ -12,6 +12,7 @@ import com.video.longwu.activity.surfaceview.SurfaceVideoActivity;
 import com.video.longwu.activity.surfaceview.SurfaceViewActivity;
 import com.video.longwu.activity.textureview.SimpleTextureViewActivity;
 import com.video.longwu.activity.tvlist.TvListActivity;
+import com.video.longwu.activity.videolist.VideoVerticalListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +30,8 @@ public class FirstActivity extends AppCompatActivity {
     Button surfaceVideo;
     @BindView(R.id.simpletextureview_video)
     Button simpletextureviewVideo;
+    @BindView(R.id.video_list)
+    Button videoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,7 @@ public class FirstActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.surfaceview, R.id.testpath, R.id.surface_camera, R.id.simpletextureview_video, R.id.surface_video})
+    @OnClick({R.id.surfaceview, R.id.testpath, R.id.surface_camera, R.id.simpletextureview_video, R.id.surface_video,R.id.video_list})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.surfaceview:
@@ -55,6 +58,9 @@ public class FirstActivity extends AppCompatActivity {
             case R.id.simpletextureview_video:
 //                startActivity(new Intent(FirstActivity.this, SimpleTextureViewActivity.class));
                 startActivity(new Intent(FirstActivity.this, TvListActivity.class));
+                break;
+                case R.id.video_list:
+                startActivity(new Intent(FirstActivity.this, VideoVerticalListActivity.class));
                 break;
         }
     }
