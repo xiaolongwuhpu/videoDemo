@@ -1,6 +1,7 @@
 package com.video.longwu.activity.videolist;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -40,7 +41,7 @@ public class MediaPlayerController extends RelativeLayout {
     @BindView(R.id.rl_play_finish)
     RelativeLayout rlPlayFinish;
     @BindView(R.id.tv_title)
-    TextView tvTitle;
+    public  TextView tvTitle;
     @BindView(R.id.iv_play)
     ImageView ivPlay;
     @BindView(R.id.tv_all_time)
@@ -180,7 +181,17 @@ public class MediaPlayerController extends RelativeLayout {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_replay:
-
+                String time = TimeUtils.formatTime(MediaHelper.getInstance().getDuration());
+                tvTime.setText(time);
+                tvAllTime.setText(time);
+                rlPlayFinish.setVisibility(View.GONE);
+                //继续播放
+                ItemPosition = 0;
+                MediaHelper.play(ItemPosition);
+                mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
+                updatePlayTimeAndProgress();
+                //延时隐藏标题
+                delayHideTitle();
                 break;
             case R.id.iv_share:
                 break;
@@ -218,9 +229,9 @@ public class MediaPlayerController extends RelativeLayout {
                 } else {
                     if (hasPause) {
                         //继续播放
-                        MediaHelper.play(0);
-//                        mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
-//                        updatePlayTimeAndProgress();
+                        MediaHelper.play(ItemPosition);
+                        mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 2000);
+                        updatePlayTimeAndProgress();
                         hasPause = false;
                     } else {
                         //播放
@@ -262,6 +273,7 @@ public class MediaPlayerController extends RelativeLayout {
     public void setDuration(int duration) {
         String time = TimeUtils.formatTime(duration);
         tvTime.setText(time);
+        tvAllTime.setText(time);
         tvUseTime.setText("00:00");
         seekBar.setMax(duration);
     }
@@ -315,6 +327,12 @@ public class MediaPlayerController extends RelativeLayout {
 //        setseekBar();
     }
     //----------记录播放进度---end------//
+    public void delayHideTitle(){
+        //移除消息
+        mHandler.removeMessages(MSG_HIDE_TITLE);
+        //发送一个空的延时2秒消息
+        mHandler.sendEmptyMessageDelayed(MSG_HIDE_TITLE,2000);
+    }
     //移除所有的消息
     public void removeAllMessage() {
         mHandler.removeCallbacksAndMessages(null);

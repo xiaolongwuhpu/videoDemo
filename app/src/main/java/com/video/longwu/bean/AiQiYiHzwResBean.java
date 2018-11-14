@@ -310,6 +310,17 @@ public class AiQiYiHzwResBean  implements Serializable {
             private String pds;
             private List<?> lgh;
 
+            @Override
+            public String toString() {
+                return "VlistBean{" +
+                        "vpic='" + vpic + '\'' +
+                        ", shortTitle='" + shortTitle + '\'' +
+                        ", vurl='" + vurl + '\'' +
+                        ", timeLength=" + timeLength +
+                        ", vt='" + vt + '\'' +
+                        '}';
+            }
+
             public int getMdown() {
                 return mdown;
             }

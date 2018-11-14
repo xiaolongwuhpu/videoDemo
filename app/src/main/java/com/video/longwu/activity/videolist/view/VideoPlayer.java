@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.video.longwu.R;
 import com.video.longwu.activity.videolist.MediaPlayerController;
-import com.video.longwu.bean.TVListBean;
+import com.video.longwu.bean.VideoListBean;
 import com.video.longwu.util.MediaHelper;
 
 import butterknife.BindView;
@@ -52,10 +52,10 @@ public class VideoPlayer extends RelativeLayout {
             //隐藏视频加载进度条
             mediaplayercontroller.setPbLoadingVisiable(View.GONE);
             //进行视频的播放
-            MediaHelper.play(0);
+            MediaHelper.play(mMediaPlayer.getCurrentPosition());
             hasPlay = true;
             //隐藏标题
-//            mediaplayercontroller.delayHideTitle();
+            mediaplayercontroller.delayHideTitle();
             //设置视频的总时长
             mediaplayercontroller.setDuration(mMediaPlayer.getDuration());
             //更新播放的时间和进度
@@ -85,7 +85,7 @@ public class VideoPlayer extends RelativeLayout {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             mSurface = new Surface(surface);
-            play(tvListBean.getTvUrl());
+            play(videoListBean.getVurl());
         }
 
         @Override
@@ -111,7 +111,7 @@ public class VideoPlayer extends RelativeLayout {
             mMediaPlayer.setSurface(mSurface);
             //设置监听
 //            mMediaPlayer.setOnBufferingUpdateListener(onBufferingUpdateListener);
-//            mMediaPlayer.setOnCompletionListener(onCompletionListener);
+            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mMediaPlayer.setOnErrorListener(onErrorListener);
             mMediaPlayer.setOnPreparedListener(onPreparedListener);
             mMediaPlayer.setScreenOnWhilePlaying(true);//在视频播放的时候保持屏幕的高亮
@@ -121,11 +121,18 @@ public class VideoPlayer extends RelativeLayout {
             e.printStackTrace();
         }
     }
+    private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mediaplayercontroller.showPlayFinishView();
+        }
+    };
 
-    TVListBean tvListBean;
+    VideoListBean videoListBean;
 
-    public void setDataSouresUrl(TVListBean tvListBean) {
-        this.tvListBean = tvListBean;
+    public void setDataSouresUrl(VideoListBean videoListBean) {
+        this.videoListBean = videoListBean;
+        mediaplayercontroller.tvTitle.setText(videoListBean.getShortTitle());
     }
 
     public void setVideoViewVisiable(int isvisable) {

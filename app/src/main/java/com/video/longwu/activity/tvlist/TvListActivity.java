@@ -14,7 +14,7 @@ import com.jude.easyrecyclerview.decoration.DividerDecoration;
 import com.video.longwu.R;
 import com.video.longwu.activity.textureview.SimpleTextureViewActivity;
 import com.video.longwu.adapter.TVListAdapter;
-import com.video.longwu.bean.TVListBean;
+import com.video.longwu.bean.VideoListBean;
 import com.video.longwu.util.FileUtil;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class TvListActivity extends AppCompatActivity {
     RecyclerView recycleview;
 
     private List<String> tvlist;
-    private List<TVListBean> tvlistBean = new ArrayList<>();
+    private List<VideoListBean> tvlistBean = new ArrayList<>();
     TVListAdapter adapter = null;
     private Context mContext;
 
@@ -51,7 +51,7 @@ public class TvListActivity extends AppCompatActivity {
         for (String str : tvlist) {
             String[] strs = str.split(",");
             if(strs.length==2){
-                tvlistBean.add(new TVListBean(strs[0], strs[1]));
+                tvlistBean.add(new VideoListBean(strs[0], strs[1]));
             }
         }
         initRecycle();
@@ -66,7 +66,7 @@ public class TvListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(mContext, SimpleTextureViewActivity.class);
-                intent.putExtra("url", tvlistBean.get(position).getTvUrl());
+                intent.putExtra("url", tvlistBean.get(position).getVurl());
                 startActivity(intent);
             }
         });

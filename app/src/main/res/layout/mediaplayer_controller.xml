@@ -98,7 +98,6 @@
         android:paddingTop="5dp"
         android:paddingRight="10dp"
         android:paddingBottom="5dp"
-        android:text="02:30"
         android:textColor="#fff"
         android:textSize="10sp"
         android:visibility="visible" />
@@ -138,7 +137,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:text="02:30"
             android:textColor="#fff"
             android:textSize="10sp" />
 

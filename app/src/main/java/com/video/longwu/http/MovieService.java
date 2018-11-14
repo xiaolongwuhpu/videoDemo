@@ -9,9 +9,9 @@ import retrofit2.http.Query;
 
 public interface MovieService {
 //    @FormUrlEncoded   //post请求必须加上
-    @GET("/")
+    @GET(".")
     Observable<ResponseBody> getMovie(@Query("callback") String type);
 
-    @GET("/")
+    @GET(".")
     Observable<ResponseBody> getMovie();
 }

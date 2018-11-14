@@ -5,6 +5,8 @@ import android.content.Context;
 import android.text.StaticLayout;
 import android.widget.SimpleCursorTreeAdapter;
 
+import com.video.longwu.util.SimpleOkhttpClientUtil;
+
 public class BaseApplication extends Application {
 
     private static BaseApplication mBaseApplication=null;
@@ -12,6 +14,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mBaseApplication = this;
+        SimpleOkhttpClientUtil.initOkHttpClient();
     }
 
 
